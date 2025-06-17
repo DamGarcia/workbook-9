@@ -30,16 +30,19 @@ public class CategoriesController {
         categories.add(new Category(1, "Food"));
         categories.add(new Category(2, "Beverages"));
         categories.add(new Category(3, "Dessert"));
+
+//        for(Category c : categories){
+//            if(c.getCategoryID() == id){
+//                ArrayList<Category> resultCategories = new ArrayList<>();
+//                resultCategories.add(c);
+//                return resultCategories;
+//            }
+//        }
+//        
+//        return categories;
         
-
-        for(Category c : categories){
-            if(c.getCategoryID() == id){
-                ArrayList<Category> resultCategories = new ArrayList<>();
-                resultCategories.add(c);
-                return resultCategories;
-            }
-        }
-
-        return new ArrayList<Category>();
+        return categories.stream()
+                .filter(c -> c.getCategoryID() == id)
+                .toList();
     }
 }
