@@ -1,6 +1,10 @@
 package com.pluralsight.dao;
 
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 import com.pluralsight.model.Student;
 // Component tells Spring to create an object from the class and
@@ -33,5 +37,11 @@ public class SimpleRegistrationDAO implements RegistrationDAO {
     @Override
     public Student findById(Long id) {
         return hashMap.get(id);
+    }
+    
+    @Override
+    public List<Student> getAllStudents() {
+        ArrayList<Student> students = new ArrayList<Student>(this.hashMap.values());
+        return students;
     }
 }
