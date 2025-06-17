@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 public class ProductsController {
     
-    private ProductDAO productDAO;
+    private final ProductDAO productDAO;
     
     @Autowired
     ProductsController(ProductDAO productDAO){
@@ -31,30 +31,10 @@ public class ProductsController {
     public Product getProductsByID(@PathVariable int id){
        return productDAO.getProductByID(id);
     }
-    
 
     @RequestMapping (path="/products/byName/{productName}", method= RequestMethod.GET)
-    public List<Product> getProductsByName(@PathVariable String productName){
-        ArrayList<Product> products = new ArrayList<>();
-        products.add(new Product(1, "Milk", 1, 5.99));
-        products.add(new Product(2, "Apples", 1, 5.99));
-        products.add(new Product(3, "Water", 1, 5.99));
-        products.add(new Product(4, "Shoes", 2, 5.99));
-        products.add(new Product(5, "Shirt", 2, 5.99));
-
-//        for(Product p : products){
-//            if(p.getProductName().equals(name)){
-//                ArrayList<Product> resultProducts = new ArrayList<>();
-//                resultProducts.add(p);
-//                return resultProducts;
-//            }
-//        }
-//
-//        return new ArrayList<Product>();
-        
-        return products.stream()
-                .filter(p -> p.getProductName().equalsIgnoreCase(productName))
-                .toList();
+    public Product getProductsByName(@PathVariable String productName){
+        return productDAO.getProductByName(productName);
     }
     
 }

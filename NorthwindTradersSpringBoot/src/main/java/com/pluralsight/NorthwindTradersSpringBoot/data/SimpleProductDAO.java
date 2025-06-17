@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-
+// @Component
 public class SimpleProductDAO implements ProductDAO{
     // can rewrite the HashMap into a List later
     private HashMap<Integer, Product> products = new HashMap<Integer, Product>();

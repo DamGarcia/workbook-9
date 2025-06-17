@@ -31,6 +31,11 @@ public class SimpleProductDAO implements ProductDAO {
     }
 
     @Override
+    public Product getProductByName(String productName) {
+        return null;
+    }
+
+    @Override
     public void addProduct(Product product) {
         // do nothing - TODO
     }
