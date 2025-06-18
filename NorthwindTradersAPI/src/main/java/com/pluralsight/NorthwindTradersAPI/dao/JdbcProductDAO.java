@@ -156,8 +156,9 @@ public class JdbcProductDAO implements ProductDAO {
     }
 
     @Override
-    public void addProduct(Product product) {
+    public Product addProduct(Product product) {
         // we will do this later
+        return new Product();
     }
     
 }
