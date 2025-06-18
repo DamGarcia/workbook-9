@@ -5,10 +5,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,19 +13,20 @@ import java.util.List;
 public class JdbcCategoryDAO implements CategoryDAO {
 
     private final DatabaseConfig databaseConfig;
+    private final BasicDataSource bds;
 
     @Autowired
     public JdbcCategoryDAO(DatabaseConfig databaseConfig) {
         this.databaseConfig = databaseConfig;
+        this.bds = new BasicDataSource();
+
+        bds.setUsername(databaseConfig.getUsername());
+        bds.setPassword(databaseConfig.getPassword());
+        bds.setUrl(databaseConfig.getUrl());
     }
 
     @Override
     public List<Category> getAllCategories() {
-        BasicDataSource bds = new BasicDataSource();
-        bds.setUsername(databaseConfig.getUsername());
-        bds.setPassword(databaseConfig.getPassword());
-        bds.setUrl(databaseConfig.getUrl());
-
         List<Category> allCategories = new ArrayList<>();
 
         String query = """
@@ -57,12 +55,6 @@ public class JdbcCategoryDAO implements CategoryDAO {
 
     @Override
     public Category getCategoryByID(int categoryID) {
-        
-        BasicDataSource bds = new BasicDataSource();
-        bds.setUsername(databaseConfig.getUsername());
-        bds.setPassword(databaseConfig.getPassword());
-        bds.setUrl(databaseConfig.getUrl());
-
         String query = """
                 select CategoryID, CategoryName
                 from categories c;
@@ -87,14 +79,7 @@ public class JdbcCategoryDAO implements CategoryDAO {
 
     @Override
     public Category getCategoryByName(String categoryName) {
-        
         Category category = null;
-        
-        try(BasicDataSource bds = new BasicDataSource()){
-            bds.setUsername(databaseConfig.getUsername());
-            bds.setPassword(databaseConfig.getPassword());
-            bds.setUrl(databaseConfig.getUrl());
-            {
                 
                 String query = """
                         select CategoryID, CategoryName
@@ -103,7 +88,7 @@ public class JdbcCategoryDAO implements CategoryDAO {
                         """;
                 
                 try (Connection c = bds.getConnection();
-                PreparedStatement s = c.prepareStatement(query);)
+                PreparedStatement s = c.prepareStatement(query))
                 {
                     s.setString(1, categoryName);
                     
@@ -114,18 +99,42 @@ public class JdbcCategoryDAO implements CategoryDAO {
                         
                         category = new Category(categoryId, categoryName);
                     }
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
                 }
-                
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        
+
         return category;
     }
 
     @Override
-    public void addCategory(Category category) {
+    public Category addCategory(Category category) {
 
+        String query = """
+                insert into categories
+                (CategoryName)
+                values
+                (?)
+                """;
+        
+        try (Connection c = bds.getConnection();
+        PreparedStatement s = c.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)){
+            
+            s.setString(1, category.getCategoryName());
+            
+            int rowsAffected = s.executeUpdate();
+            try (ResultSet keys = s.getGeneratedKeys()){
+                while(keys.next()){
+                    Category result = new Category();
+                    result.setCategoryID(keys.getInt(1));
+                    result.setCategoryName(category.getCategoryName());
+                    return result;
+                }
+            }
+            
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return null;
     }
 }

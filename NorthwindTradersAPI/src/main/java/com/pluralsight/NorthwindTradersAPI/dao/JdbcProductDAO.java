@@ -66,14 +66,7 @@ public class JdbcProductDAO implements ProductDAO {
 
     @Override
     public Product getProductByID(int userDefinedProductID) {
-
         Product p = null;
-
-        try (BasicDataSource bds = new BasicDataSource()) {
-
-            bds.setUsername(databaseConfig.getUsername());
-            bds.setPassword(databaseConfig.getPassword());
-            bds.setUrl(databaseConfig.getUrl());
 
             List<Product> productsByID = new ArrayList<>();
 
@@ -108,21 +101,12 @@ public class JdbcProductDAO implements ProductDAO {
                 throw new RuntimeException(e);
             }
 
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
         return p;
     }
 
     @Override
     public Product getProductByName(String productName) {
         Product p = null;
-
-        try (BasicDataSource bds = new BasicDataSource()) {
-            bds.setUsername(databaseConfig.getUsername());
-            bds.setPassword(databaseConfig.getPassword());
-            bds.setUrl(databaseConfig.getUrl());
 
 
             String query = """
@@ -143,20 +127,15 @@ public class JdbcProductDAO implements ProductDAO {
 
                     p = new Product(productId, productName, categoryId, unitPrice);
                 }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
 
         return p;
     }
 
     @Override
     public Product addProduct(Product product) {
-
-        System.out.println(product.toString());
-        
         String query = """
                 insert into products
                 (ProductName, SupplierID, CategoryID, UnitPrice)
