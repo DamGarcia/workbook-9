@@ -12,7 +12,7 @@ public class Product implements Serializable {
         this.productID = productID;
         this.productName = productName;
         this.categoryID = categoryID;
-        UnitPrice = unitPrice;
+        this.UnitPrice = unitPrice;
     }
 
     public Product() { 
